@@ -126,7 +126,7 @@ function SWYSGetEuropeanaSearchResults($search_terms,$search_title,$search_venue
       // print the object title
       echo '<form method="post" action=""><h3><a href="' . $e->link. 
 	   '">'.$e->title.'</a></h3>';
-      echo '<input name="object_url" value="'.$object_url.'" id="object_url" type="hidden"><input type="submit" name="objecttoblog" value="Use this one" /></form>';
+      echo '<input name="object_url" value="'.$object_url.'" id="object_url" type="hidden"><input type="submit" name="objecttoblog" value="Use this one" /></form><br />';
 
     }
     echo '</ul>';

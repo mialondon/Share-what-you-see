@@ -156,7 +156,7 @@ function ShareWhatYouSeeShortCode($atts, $content=null) {
   $search_terms = stripslashes($_POST['search_term']); // the free-text search field
   $search_title = stripslashes($_POST['search_title']); // the free-text search field
   $search_venue = stripslashes($_POST['search_venue']); // the free-text search field
-  //$object_url = "http://www.europeana.eu/portal/record/09405k/7FCE7A9A7DBDA0BA8E6E01A6B34CD09064A6BA75.srw?wskey=XADNJCFGME"; 
+  $object_url = $_POST['object_url'];
   $search_sources = 'Europeana'; // which target APIs are being searched? Can be set in form but for now fake it as Europeana; default should really be all (if it's blank)
   
   if(!empty($search_terms) || !empty($search_venue) || !empty($search_title)) {
@@ -166,8 +166,9 @@ function ShareWhatYouSeeShortCode($atts, $content=null) {
 //    SWYSGetEuropeanaSearchResults($search_terms,$search_title,$search_venue,'import',$search_sources);
   } elseif (!empty($object_url)){
     $SWYS_new_post_ID = createSWYSPost($object_url);
-    echo $SWYS_new_post_ID;
-    echo $object_url;
+//    echo $SWYS_new_post_ID;
+    echo '<h3>Added '.$object_url.'</h3>';
+	echo '<a href="../wp-admin/post.php?post='.$SWYS_new_post_ID.'&action=edit">Go Edit</a>';    
   } else {
     // display search box and instructions
     SWYSPrintSearchForm();
