@@ -24,17 +24,21 @@
  * Was: Specialised search box for Tag Duel - asks for period (time) and place
  * Values may be free-text or come from the OpenSearch term list [Ian]
  * Might be nice to add optional free-text search if it's likely to return lots of results
+ * TO DO: should give a venue list as typing one in would give mismatches
+ * TO DO: should have the ability to search by city (which means knowing which venues are in which city)
  */
 function SWYSPrintSearchForm() {
   ?>
   <h3>Search for something you saw...</h3><form method="post" action="">
     
-  <label class="" for="search_time">Pick a time...</label>
-	<input name="search_time" size="30" tabindex="1" value="" id="search_time" autocomplete="on" type="text"><br />
-  <label class="" for="search_place">Pick a place...</label>
-	<input name="search_place" size="30" tabindex="1" value="" id="search_place" autocomplete="on" type="text"><br />
-  <label class="" for="search_term">And maybe a search term...</label>
-	<input name="search_term" size="30" tabindex="1" value="" id="search_term" autocomplete="on" type="text"><br />
+  <label class="" for="search_venue">What was the venue</label>
+	<input name="search_venue" size="30" tabindex="1" value="" id="search_venue" autocomplete="on" type="text"><br />
+<!--  <label class="" for="search_accession">Do you know the accession number?</label>
+	<input name="search_accession" size="30" tabindex="2" value="" id="search_accession" autocomplete="on" type="text"><br />-->
+  <label class="" for="search_title">Or maybe the object/artwork title?</label>
+	<input name="search_title" size="30" tabindex="2" value="" id="search_title" autocomplete="on" type="text"><br />
+  <label class="" for="search_term">Or just try a general search</label>
+	<input name="search_term" size="30" tabindex="3" value="" id="search_term" autocomplete="on" type="text"><br />
 	  
           <input type="submit" name="search" value="Go!" />
 
@@ -45,24 +49,18 @@ function SWYSPrintSearchForm() {
 
 
 /*
- * Will need to vary depending on the target API
  * Inputs: $terms is the search terms given in the box, $mode is display or import
- * Needs updating to use $wpdb methods
  */
 function SWYSGetEuropeanaSearchResults($search_terms,$search_place,$search_time,$mode,$search_sources) {
   
-  global $wpdb;
-  
   $api_provider;
   $type;
-  // get site options
+  // get site options ## but IIRC this don't work right now
   $mmg_import_Europeana_API_key = $mmg_import_options_arr["mmg_import_Europeana_API_key"];
   $mmg_import_Europeana_API_URL = $mmg_import_options_arr["mmg_import_Europeana_API_URL"];
-  
-  /* Some of this is based on stuff in January at CultureHackDay designed to get CultureGrid in without disturbing too much existing code. Insert moral tale about shortcuts eventually taking longer here...
-    ### Right now this needs to be updated to deal with search place and time (if they exist) for Europeana
-    But it also shouldn't be a case statement because it only allows for one provider search at a time
-  */
+
+  // ### to do re-write later to get rid of the case statements
+
   switch ($search_sources) {
       case 'Europeana':
           $type = 'xml';
@@ -72,7 +70,7 @@ function SWYSGetEuropeanaSearchResults($search_terms,$search_place,$search_time,
 	  if (!empty($search_terms)) {
 	    $url .=  $search_terms . '&';
 	  }
-	  if (!empty($search_time)) {
+	  if (!empty($search_)) {
 	    $url .= 'enrichment_period_term:' . $search_time .'&';
 	  } 
   	  if (!empty($search_place)) {
@@ -105,12 +103,7 @@ echo "<br />Loading list file for your search... <br />";
 	  $data = $rss->channel;
 	  //$atom = $rss->channel;
 	  //$data = $atom->children('atom');
-	} else {
-          $data = simplexml_load_string($output);	  
 	}
-        break;
-      case 'json':
-        $data = json_decode($output,true);
         break;
     }
   }
@@ -132,13 +125,9 @@ echo "<br />Loading list file for your search... <br />";
     
     } else {
   
-    // set up database stuff specific to the db table for this API (if it's not using the general object table) object_table
-    // $db_objecttable = 'wp_mmg_objects_powerhouse';
-    DEFINE("db_objecttable",table_prefix.'objects');
-    DEFINE("db_objecttablefields",'name, accession_number, institution, data_source_url, source_display_url, description, date_earliest, date_latest, interpretative_date, interpretative_place, image_url, subject_group, material_form');
-    
-    // process the file
-    // ### this needs to be updated for SWYS as not importing but displaying back to screen
+  // this will be custom field etc stuff in WordPress
+  // process the file
+  // ### this needs to be updated for SWYS as not importing but displaying back to screen
     
     if( sizeof($data) > 0 ){
 
@@ -149,7 +138,7 @@ echo "<br />Loading list file for your search... <br />";
 	  case 'Europeana':
 	    $terms = 'Keyword='.$search_terms.'&Place='.$search_place.'&Time='.$search_time; // for reference later
 	    //echo '<pre>'.print_r($data).'</pre>';
-            $i = mmgDoEuropeanaImportXML($data,$terms);
+            $i = mmgDoEuropeanaImportXML($data,$terms); // ### change this
             break;
       }
       //echo "Building SQL string... ";
@@ -188,20 +177,7 @@ function mmgDoEuropeanaImportXML($data,$terms) {
       // Parse what was returned
       $xmldoc = simplexml_load_string($resultdoc);
 
-      // searchRetrieveResponse->records->record->recordData->dc->title
-      // Create an object based on that document
-      mmgInsertObject($xmldoc->records->record->recordData->dc->title,
-                      $xmldoc->records->record->recordData->dc->uri,
-                      $xmldoc->records->record->recordData->dc->publisher,  // Institutional Provider
-                      'http://api.europeana.org',  // Data source URL
-                      $xmldoc->records->record->recordData->dc->uri,
-                      $xmldoc->records->record->recordData->dc->description,
-                      "",  // Date_earliest
-                      "",  // Data_latest
-                      "", // $doc['dcterms.temporal'][0],  // interpretative_date
-                      "", // $doc['dcterms.spatial'][0],  // interpretative_place
-                      $xmldoc->records->record->recordData->dc->object, // 'http://culturegrid.org.uk' . $doc['cached_thumbnail'],  // image url
-                      $terms); // terms
+// process rss for title, maker/artist (if we can get it), date, description, image/thumbnail, provider
 
     }
   }
