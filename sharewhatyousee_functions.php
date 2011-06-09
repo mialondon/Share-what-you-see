@@ -119,13 +119,14 @@ function SWYSGetEuropeanaSearchResults($search_terms,$search_title,$search_venue
       // get image URL, test to make sure it's an image
       $str = $e->enclosure['url'];
       $pos = strrpos($str, "jpeg");
+      $object_url = $e->link;
       if ($pos != false) { // note: three equal signs
         echo "<img src=".$e->enclosure['url']." alt='thumbnail of ".$e->title."'>";
       }
       // print the object title
       echo '<form method="post" action=""><h3><a href="' . $e->link. 
 	   '">'.$e->title.'</a></h3>';
-      echo '<input name="object_url" value="test" id="object_url" type="hidden"><input type="submit" name="objecttoblog" value="Use this one" /></form>';
+      echo '<input name="object_url" value="'.$object_url.'" id="object_url" type="hidden"><input type="submit" name="objecttoblog" value="Use this one" /></form>';
 
     }
     echo '</ul>';
@@ -253,7 +254,7 @@ $image = "";
 
 $content = "";
 if (!empty($image)) {
-$content .= "<a href=\"".$image."\" alt=\"".$title."\" />";
+$content .= "<img src=\"".$image."\" alt=\"".$title."\" />";
 }
 if (!empty($title)) {
 $content .= "<strong>Title:</strong> ".$title."<br />";

@@ -156,7 +156,7 @@ function ShareWhatYouSeeShortCode($atts, $content=null) {
   $search_terms = stripslashes($_POST['search_term']); // the free-text search field
   $search_title = stripslashes($_POST['search_title']); // the free-text search field
   $search_venue = stripslashes($_POST['search_venue']); // the free-text search field
-  $object_url = "http://www.europeana.eu/portal/record/09405k/7FCE7A9A7DBDA0BA8E6E01A6B34CD09064A6BA75.srw?wskey=XADNJCFGME"; 
+  //$object_url = "http://www.europeana.eu/portal/record/09405k/7FCE7A9A7DBDA0BA8E6E01A6B34CD09064A6BA75.srw?wskey=XADNJCFGME"; 
   $search_sources = 'Europeana'; // which target APIs are being searched? Can be set in form but for now fake it as Europeana; default should really be all (if it's blank)
   
   if(!empty($search_terms) || !empty($search_venue) || !empty($search_title)) {
