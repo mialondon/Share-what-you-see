@@ -206,22 +206,22 @@ function mmgInsertObject($object_name,$accession_number,$api_provider, $data_sou
   }
 }
 
-function createSWYSPost($object_name,$accession_number,$api_provider, $data_source_url, $source_display_url, $description, $date_earliest, $date_latest, $interpretative_date, $interpretative_place, $image_url, $terms) {
+function createSWYSPost($title,$maker,$date,$description,$image,$provider) {
 $content = "";
-if (!empty($image_url)) {
-$content .= "<a href=\"".$image_url."\" alt=\"".$object_name."\" />"
+if (!empty($image)) {
+$content .= "<a href=\"".$image."\" alt=\"".$title."\" />";
 }
 if (!empty($title)) {
-$content .= "<strong>Title:</strong> ".$object_name."<br />";
+$content .= "<strong>Title:</strong> ".$title."<br />";
 }
 if (!empty($description)) {
 $content .= "<strong>Description:</strong> ".$description."<br />";
 }
 $new_post = array(
-'post_title' => $object_name,
-        'post_content' => wpautop(convert_chars($content)
+'post_title' => $title,
+        'post_content' => convert_chars($content)
         //Default field values will do for the rest - so we don't need to worry about these - see http://codex.wordpress.org/Function_Reference/wp_insert_post
-)
+);
 
 $post_id = wp_insert_post($new_post);
 
@@ -234,11 +234,16 @@ elseif ($post_id == 0) {
 return false;
 }
 else {
-add_post_meta($post_id, 'title', $object_name);
-//other custom fields here - Institution? Date?
+add_post_meta($post_id, 'object_title', $title);
+add_post_meta($post_id, 'object_maker', $maker);
+add_post_meta($post_id, 'object_date', $date);
+add_post_meta($post_id, 'object_provider', $provider);
+//other custom fields here if required
 }
 return $post_id;
 }
+
+
 
 function getSingleValue($document,$xpath) {
   $result;
