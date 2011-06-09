@@ -123,9 +123,9 @@ function SWYSGetEuropeanaSearchResults($search_terms,$search_title,$search_venue
         echo "<img src=".$e->enclosure['url']." alt='thumbnail of ".$e->title."'>";
       }
       // print the object title
-      echo '<h3><a href="' . $e->link. 
+      echo '<form method="post" action=""><h3><a href="' . $e->link. 
 	   '">'.$e->title.'</a></h3>';
-      echo '<form method="post" action=""><input name="object_url" value="'.$e->link.'" id="object_url" type="hidden"><input type="submit" name="search" value="Use this one" /></form>';
+      echo '<input name="object_url" value="test" id="object_url" type="hidden"><input type="submit" name="objecttoblog" value="Use this one" /></form>';
 
     }
     echo '</ul>';
@@ -195,7 +195,62 @@ function mmgInsertObject($object_name,$accession_number,$api_provider, $data_sou
   }
 }
 
-function createSWYSPost($title,$maker,$date,$description,$image,$provider) {
+function createSWYSPost($europeana_url) {
+
+$xml = file_get_contents($europeana_url);
+// Create DOMDocument and load the xml to parse
+$doc = new DOMDocument();
+$doc->loadXML($xml);
+
+// Create DOMXPath object so we can use XPath queries
+$xpath = new DOMXPath($doc);
+$xpath->registerNameSpace('srw', 'http://www.loc.gov/zing/srw/');
+$xpath->registerNameSpace('europeana', 'http://www.europeana.eu');
+$xpath->registerNameSpace('dc', 'http://purl.org/dc/elements/1.1/');
+$xpath->registerNameSpace('dcterms', 'http://purl.org/dc/terms/');
+$records = $doc->getElementsByTagName("dc");
+
+$xpath_description = "./dc:description/text()";
+$xpath_title = "./dc:title/text()";
+$xpath_provider = "./dcterms:isPartOf/text()";
+$xpath_image = "./europeana:object/text()";
+
+foreach($records as $record) {
+
+$nodeList_title = $xpath->evaluate($xpath_title,$record);
+if ($nodeList_title->length > 0) {
+$content_title = $nodeList_title->item(0)->nodeValue;
+$title = $content_title;
+} else {
+$title = "UNKNOWN TITLE";
+}
+
+$nodeList_description = $xpath->evaluate($xpath_description,$record);
+if ($nodeList_description->length > 0) {
+$content_description = $nodeList_description->item(0)->nodeValue;
+$description = $content_description;
+} else {
+$description = "NO DESCRIPTION";
+}
+
+$nodeList_provider = $xpath->evaluate($xpath_provider,$record);
+if ($nodeList_provider->length > 0) {
+$content_provider = $nodeList_provider->item(0)->nodeValue;
+$provider = $content_provider;
+} else {
+$provider = "UNKNOWN PROVIDER";
+}
+
+$nodeList_image = $xpath->evaluate($xpath_image,$record);
+if ($nodeList_image->length > 0) {
+$content_image = $nodeList_image->item(0)->nodeValue;
+$image = $content_image;
+} else {
+$image = "";
+}
+
+}
+
 $content = "";
 if (!empty($image)) {
 $content .= "<a href=\"".$image."\" alt=\"".$title."\" />";
@@ -224,15 +279,13 @@ return false;
 }
 else {
 add_post_meta($post_id, 'object_title', $title);
-add_post_meta($post_id, 'object_maker', $maker);
-add_post_meta($post_id, 'object_date', $date);
+// add_post_meta($post_id, 'object_maker', $maker);
+// add_post_meta($post_id, 'object_date', $date);
 add_post_meta($post_id, 'object_provider', $provider);
 //other custom fields here if required
 }
 return $post_id;
 }
-
-
 
 function getSingleValue($document,$xpath) {
   $result;
