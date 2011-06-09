@@ -25,7 +25,7 @@
  * Values may be free-text or come from the OpenSearch term list [Ian]
  * Might be nice to add optional free-text search if it's likely to return lots of results
  */
-function SWYSPrintSearchBox() {
+function SWYSPrintSearchForm() {
   ?>
   <h3>Search for something you saw...</h3><form method="post" action="">
     
