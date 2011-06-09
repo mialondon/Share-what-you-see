@@ -154,14 +154,14 @@ function ShareWhatYouSeeShortCode($atts, $content=null) {
   }
     
   $search_terms = stripslashes($_POST['search_term']); // the free-text search field
-  $search_place = stripslashes($_POST['search_place']); // the free-text search field
-  $search_time = stripslashes($_POST['search_time']); // the free-text search field
+  $search_title = stripslashes($_POST['search_title']); // the free-text search field
+  $search_venue = stripslashes($_POST['search_venue']); // the free-text search field
   $search_sources = 'Europeana'; // which target APIs are being searched? Can be set in form but for now fake it as Europeana; default should really be all (if it's blank)
   
-  if(!empty($search_terms) || !empty($search_time) || !empty($search_place)) {
+  if(!empty($search_terms) || !empty($search_venue) || !empty($search_title)) {
     // process - deal with search, display results and import into db
     echo '<p>Searching now...</p>';  
-    SWYSGetEuropeanaSearchResults($search_terms,$search_place,$search_time,'import',$search_sources);
+    SWYSGetEuropeanaSearchResults($search_terms,$search_title,$search_venue,'import',$search_sources);
     } else {
     // display search box and instructions
     SWYSPrintSearchForm();

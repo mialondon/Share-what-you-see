@@ -51,7 +51,7 @@ function SWYSPrintSearchForm() {
 /*
  * Inputs: $terms is the search terms given in the box, $mode is display or import
  */
-function SWYSGetEuropeanaSearchResults($search_terms,$search_place,$search_time,$mode,$search_sources) {
+function SWYSGetEuropeanaSearchResults($search_terms,$search_title,$search_venue,$mode,$search_sources) {
   
   $api_provider;
   $type;
@@ -70,11 +70,11 @@ function SWYSGetEuropeanaSearchResults($search_terms,$search_place,$search_time,
 	  if (!empty($search_terms)) {
 	    $url .=  $search_terms . '&';
 	  }
-	  if (!empty($search_)) {
-	    $url .= 'enrichment_period_term:' . $search_time .'&';
+	  if (!empty($search_title)) {
+	    $url .= 'title:' . $search_title .'&';
 	  } 
-  	  if (!empty($search_place)) {
-	    $url .= 'enrichment_place_label:' . $search_place;
+  	  if (!empty($search_venue)) {
+	    $url .= 'dataProvider:' . $search_venue;
 	  }
 	  $url .= '&wskey=' . 'XADNJCFGME';
 	  // $url = $mmg_import_Europeana_API_URL . '?searchTerms=' . $search_terms . '&enrichment_period_term=' . $search_time . '&enrichment_place_label=' . $search_place . '&wskey=' . $mmg_import_Europeana_API_key; // ### not getting the settings?
@@ -136,7 +136,7 @@ echo "<br />Loading list file for your search... <br />";
       echo 'Loading records into database...';    
       switch ($search_sources) {
 	  case 'Europeana':
-	    $terms = 'Keyword='.$search_terms.'&Place='.$search_place.'&Time='.$search_time; // for reference later
+	    $terms = 'Keyword='.$search_terms.'&Title='.$search_title.'&Venue='.$search_venue; // for reference later
 	    //echo '<pre>'.print_r($data).'</pre>';
             $i = mmgDoEuropeanaImportXML($data,$terms); // ### change this
             break;
