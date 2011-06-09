@@ -77,14 +77,13 @@ function SWYSGetEuropeanaSearchResults($search_terms,$search_title,$search_venue
 	    $url .= 'dataProvider:' . $search_venue;
 	  }
 	  $url .= '&wskey=' . 'XADNJCFGME';
-	  // $url = $mmg_import_Europeana_API_URL . '?searchTerms=' . $search_terms . '&enrichment_period_term=' . $search_time . '&enrichment_place_label=' . $search_place . '&wskey=' . $mmg_import_Europeana_API_key; // ### not getting the settings?
 	  echo $url;
 	  // could also look for completeness (<europeana:completeness>) values 1 - 10
           break;
 
   }
 
-echo "<br />Loading list file for your search... <br />";
+echo "<br />Loading the results for your search... <br />";
 
   //echo $url;
 
@@ -112,16 +111,16 @@ echo "<br />Loading list file for your search... <br />";
   
     if ($mode == 'display') {
     
-      echo '<ul>';
+      /*echo '<ul>';
       foreach($data->entry as $e){
         echo '<li><a href="' . $e->link[0]['href'] . 
              '">'.$e->title.'</a></li>';
       }
-      echo '</ul>';
+      echo '</ul>';*/
       
-      //echo '<pre>';
-      //print_r($data);
-      //echo '</pre>';
+      echo '<pre>';
+      print_r($data);
+      echo '</pre>';
     
     } else {
   
@@ -205,6 +204,40 @@ function mmgInsertObject($object_name,$accession_number,$api_provider, $data_sou
   else {
     echo 'Item has no image....';
   }
+}
+
+function createSWYSPost($object_name,$accession_number,$api_provider, $data_source_url, $source_display_url, $description, $date_earliest, $date_latest, $interpretative_date, $interpretative_place, $image_url, $terms) {
+$content = "";
+if (!empty($image_url)) {
+$content .= "<a href=\"".$image_url."\" alt=\"".$object_name."\" />"
+}
+if (!empty($title)) {
+$content .= "<strong>Title:</strong> ".$object_name."<br />";
+}
+if (!empty($description)) {
+$content .= "<strong>Description:</strong> ".$description."<br />";
+}
+$new_post = array(
+'post_title' => $object_name,
+        'post_content' => wpautop(convert_chars($content)
+        //Default field values will do for the rest - so we don't need to worry about these - see http://codex.wordpress.org/Function_Reference/wp_insert_post
+)
+
+$post_id = wp_insert_post($new_post);
+
+if (is_object($post_id)) {
+//error - what to do?
+return false;
+}
+elseif ($post_id == 0) {
+//error - what to do?
+return false;
+}
+else {
+add_post_meta($post_id, 'title', $object_name);
+//other custom fields here - Institution? Date?
+}
+return $post_id;
 }
 
 function getSingleValue($document,$xpath) {
