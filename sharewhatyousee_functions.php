@@ -29,9 +29,9 @@
  */
 function SWYSPrintSearchForm() {
   ?>
-  <h3>Search for something you saw...</h3><form method="post" action="">
+  <h3>Search for something you saw so you can share it in a blog post...</h3><form method="post" action="">
     
-  <label class="" for="search_venue">What was the venue</label>
+  <label class="" for="search_venue">What was the venue?</label>
 	<input name="search_venue" size="30" tabindex="1" value="" id="search_venue" autocomplete="on" type="text"><br />
 <!--  <label class="" for="search_accession">Do you know the accession number?</label>
 	<input name="search_accession" size="30" tabindex="2" value="" id="search_accession" autocomplete="on" type="text"><br />-->
@@ -65,6 +65,7 @@ function SWYSGetEuropeanaSearchResults($search_terms,$search_title,$search_venue
       case 'Europeana':
           $type = 'xml';
           $api_provider = 'Europeana'; // ### will presumably need to be the source provider? Check the field
+// top tip - for more detailed result listings use .json
 	  $url = 'http://api.europeana.eu/api/opensearch.rss' . '?searchTerms=';
 	  // the search seems to deal with extra '&' so am doing that rather than conditional crap
 	  if (!empty($search_terms)) {
@@ -83,9 +84,7 @@ function SWYSGetEuropeanaSearchResults($search_terms,$search_title,$search_venue
 
   }
 
-echo "<br />Loading the results for your search... <br />";
-
-  //echo $url;
+  echo "<br />Loading the results for your search... <br />";
 
   $ch = curl_init(); // relies on curl
   curl_setopt($ch, CURLOPT_USERAGENT, 'API client');      
@@ -108,46 +107,36 @@ echo "<br />Loading the results for your search... <br />";
   }
 
   if (!empty($data)) {
-  
-    if ($mode == 'display') {
-    
-      /*echo '<ul>';
-      foreach($data->entry as $e){
-        echo '<li><a href="' . $e->link[0]['href'] . 
-             '">'.$e->title.'</a></li>';
-      }
-      echo '</ul>';*/
-      
-      echo '<pre>';
-      print_r($data);
-      echo '</pre>';
-    
-    } else {
-  
-  // this will be custom field etc stuff in WordPress
-  // process the file
-  // ### this needs to be updated for SWYS as not importing but displaying back to screen
-    
-    if( sizeof($data) > 0 ){
 
-      $i;
-    
-      echo 'Loading records into database...';    
-      switch ($search_sources) {
-	  case 'Europeana':
-	    $terms = 'Keyword='.$search_terms.'&Title='.$search_title.'&Venue='.$search_venue; // for reference later
-	    //echo '<pre>'.print_r($data).'</pre>';
-            $i = mmgDoEuropeanaImportXML($data,$terms); // ### change this
-            break;
+  // the Europeana Opensearch RSS result set only provides access to title, URI and thumbnail in list view
+  // but all we need is thumbnail so the user can identify the thing they saw
+  // (can always update to use the json version)
+  // so show it and pass the URI to Owen's createSWYSPost function
+      
+     // testing bit
+    echo '<ul>';
+    foreach($data->item as $e){
+      // get image URL, test to make sure it's an image
+      $str = $e->enclosure['url'];
+      $pos = strrpos($str, "jpeg");
+      if ($pos != false) { // note: three equal signs
+        echo "<img src=".$e->enclosure['url']." alt='thumbnail of ".$e->title."'>";
       }
-      //echo "Building SQL string... ";
-  
-      echo '<p>'.$i.' objects loaded.</p>';
-        
-    } else {
-      echo 'Return size apparently < 0'; // April 2011 ###
+      // print the object title
+      echo '<h3><a href="' . $e->link. 
+	   '">'.$e->title.'</a></h3>';
+      echo '<form method="post" action=""><input name="object_url" value="'.$e->link.'" id="object_url" type="hidden"><input type="submit" name="search" value="Use this one" /></form>';
+
     }
-  }
+    echo '</ul>';
+    
+  
+/*     // testing bit      
+    echo '<pre>';
+    print_r($data);
+    echo '</pre>';
+*/   
+    
   } else {
     echo '<br />No results found for that search term. Try again!';
   }
