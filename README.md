@@ -3,7 +3,7 @@ Share-what-you-see
 
 WordPress plugin to add results from Europeana search for interesting things seen in museums etc to a blogpost
 
-Share What You See' is a plugin designed to make a museum and gallery visit more personal, memorable and sociable.  There's always that one object that made you laugh, reminded you of friends or family, or was just really striking.  The plugin lets you search for the object in the Europeana collection (by title, and hopefully by venue or accession number), and instantly create a blog post about it (screenshot below) to share it with others.
+'Share What You See' is a plugin designed to make a museum and gallery visit more personal, memorable and sociable.  There's always that one object that made you laugh, reminded you of friends or family, or was just really striking.  The plugin lets you search for the object in the Europeana collection (by title, and hopefully by venue or accession number), and instantly create a blog post about it (screenshot below) to share it with others.
 
 Once you've found your object, the plugin automatically inserts an image of it, plus the title, description and venue name.
 
