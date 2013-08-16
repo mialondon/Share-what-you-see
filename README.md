@@ -11,4 +11,4 @@ You can then add your own text and whatever other media you like.  The  plugin s
 
 If you're in a gallery with wifi, you could create a post and share an object then and there, because WordPress is optimised for mobile devices.  This help makes collection objects into 'social objects', embedding them in the lives of museum and gallery visitors.  The plugin could also be used by teachers or community groups to elicit personal memories or creative stories before or after museum visits.
 
-<img src="http://1.bp.blogspot.com/-DFZ2OcUj8ps/TfOpCEJLDNI/AAAAAAAAAEE/NO8muIyzltM/s320/SWYS4_pre-populatedblogpost.png">
+<img src="http://1.bp.blogspot.com/-DFZ2OcUj8ps/TfOpCEJLDNI/AAAAAAAAAEE/NO8muIyzltM/s1600/SWYS4_pre-populatedblogpost.png">
